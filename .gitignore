@@ -33,6 +33,10 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
+# Temporary seed / credential files (never commit)
+scripts/real-uuids.json
+scripts/reset-test-data.sql
+
 # vercel
 .vercel
 
