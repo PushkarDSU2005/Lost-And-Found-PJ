@@ -7,6 +7,7 @@ import { BottomNav } from '@/components/nav/BottomNav'
 import { Footer } from '@/components/nav/Footer'
 import { ToastProvider } from '@/components/ToastProvider'
 import { NotificationBell } from '@/components/nav/NotificationBell'
+import { createSupabaseServerClient } from '@/lib/supabase/server'
 
 // ─── Bricolage Grotesque — display font (luggage tag / stamp warmth) ───────────
 const fontDisplay = Bricolage_Grotesque({
@@ -81,11 +82,29 @@ export const viewport: Viewport = {
 }
 
 // ─── Root layout ──────────────────────────────────────────────────────────────
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  // Get current user for navbar
+  const supabase = await createSupabaseServerClient()
+  const { data: { user: authUser } } = await supabase.auth.getUser()
+  
+  // Fetch user profile if authenticated
+  let user = null
+  if (authUser) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('id, email, full_name, avatar_url, role')
+      .eq('id', authUser.id)
+      .single()
+    
+    if (profile) {
+      user = profile
+    }
+  }
+
   return (
     <html lang="en" suppressHydrationWarning className={`${fontDisplay.variable} ${fontBody.variable}`}>
       <body className="min-h-screen font-sans antialiased bg-background text-foreground">
@@ -98,6 +117,7 @@ export default function RootLayout({
         </a>
 
         <Navbar
+          user={user}
           bellSlot={
             <Suspense fallback={null}>
               <NotificationBell />

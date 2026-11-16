@@ -2,10 +2,11 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Menu, X, User, LogIn } from 'lucide-react'
+import { Menu, X, LogIn } from 'lucide-react'
 import { useState, type ReactNode } from 'react'
 import { cn } from '@/lib/utils'
 import { Button, buttonVariants } from '@/components/ui/button'
+import { UserNav } from './UserNav'
 
 const NAV_LINKS = [
   { href: '/browse',       label: 'Browse'       },
@@ -16,9 +17,17 @@ const NAV_LINKS = [
 interface NavbarProps {
   /** Server-rendered notification bell — passed from root layout */
   bellSlot?: ReactNode
+  /** Current user (if authenticated) */
+  user?: {
+    id: string
+    email?: string
+    full_name?: string
+    avatar_url?: string
+    role?: 'student' | 'staff' | 'admin'
+  } | null
 }
 
-export function Navbar({ bellSlot }: NavbarProps) {
+export function Navbar({ bellSlot, user }: NavbarProps) {
   const pathname = usePathname()
   const [mobileOpen, setMobileOpen] = useState(false)
 
@@ -78,20 +87,22 @@ export function Navbar({ bellSlot }: NavbarProps) {
           ))}
         </ul>
 
-        {/* Desktop right side: notification bell + avatar */}
+        {/* Desktop right side: notification bell + user nav or sign in */}
         <div className="hidden md:flex items-center gap-2">
           {/* Notification bell (server-rendered, passed from layout) */}
-          {bellSlot}
-          {/* Avatar / sign-in — replaced by real auth in Task 3 */}
-          <Button variant="ghost" size="icon" aria-label="Account menu">
-            <User className="size-4" />
-          </Button>
-          <Button size="sm" variant="default">
-            <Link href="/auth/login" className="flex items-center gap-1">
-              <LogIn className="size-4 mr-1" aria-hidden="true" />
-              Sign in
+          {user && bellSlot}
+          
+          {/* User nav (avatar dropdown) or sign-in button */}
+          {user ? (
+            <UserNav user={user} />
+          ) : (
+            <Link href="/login">
+              <Button size="sm" variant="default" className="flex items-center gap-1">
+                <LogIn className="size-4 mr-1" aria-hidden="true" />
+                Sign in
+              </Button>
             </Link>
-          </Button>
+          )}
         </div>
 
         {/* Mobile hamburger */}
@@ -132,14 +143,42 @@ export function Navbar({ bellSlot }: NavbarProps) {
               </li>
             ))}
           </ul>
+
+          {/* Mobile auth section */}
           <div className="mt-3 border-t border-border pt-3">
-            <Link
-              href="/auth/login"
-              onClick={() => setMobileOpen(false)}
-              className={buttonVariants({ size: 'sm', className: 'w-full' })}
-            >
-              Sign in
-            </Link>
+            {user ? (
+              <div className="space-y-1">
+                <Link
+                  href="/dashboard"
+                  onClick={() => setMobileOpen(false)}
+                  className={buttonVariants({ size: 'sm', variant: 'ghost', className: 'w-full justify-start' })}
+                >
+                  Dashboard
+                </Link>
+                <Link
+                  href="/my-items"
+                  onClick={() => setMobileOpen(false)}
+                  className={buttonVariants({ size: 'sm', variant: 'ghost', className: 'w-full justify-start' })}
+                >
+                  My Items
+                </Link>
+                <Link
+                  href="/settings"
+                  onClick={() => setMobileOpen(false)}
+                  className={buttonVariants({ size: 'sm', variant: 'ghost', className: 'w-full justify-start' })}
+                >
+                  Settings
+                </Link>
+              </div>
+            ) : (
+              <Link
+                href="/login"
+                onClick={() => setMobileOpen(false)}
+                className={buttonVariants({ size: 'sm', className: 'w-full' })}
+              >
+                Sign in
+              </Link>
+            )}
           </div>
         </div>
       )}
