@@ -1,7 +1,8 @@
+'use client'
+
 import Link from 'next/link'
 import { format } from 'date-fns'
 import { FileText, MessageSquare } from 'lucide-react'
-import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { cn } from '@/lib/utils'
 import { buttonVariants } from '@/components/ui/button'
 import { WithdrawClaimButton } from './WithdrawClaimButton'
@@ -14,27 +15,20 @@ const CLAIM_STATUS_STYLES: Record<ClaimStatus, string> = {
   withdrawn: 'bg-muted text-muted-foreground',
 }
 
-interface MyClaimsTabProps {
-  userId: string
+type Claim = {
+  id: string
+  item_id: string
+  status: ClaimStatus
+  created_at: string
+  items: { id: string; title: string; report_type: string }
 }
 
-export async function MyClaimsTab({ userId }: MyClaimsTabProps) {
-  const supabase = await createSupabaseServerClient()
+interface MyClaimsTabProps {
+  userId: string
+  claims: Claim[]
+}
 
-  const { data: claims } = await supabase
-    .from('claims')
-    .select('id, item_id, status, created_at, items!claims_item_id_fkey(id, title, report_type)')
-    .eq('claimant_id', userId)
-    .order('created_at', { ascending: false })
-    .limit(50)
-
-  const claimsList = (claims ?? []) as unknown as Array<{
-    id: string
-    item_id: string
-    status: ClaimStatus
-    created_at: string
-    items: { id: string; title: string; report_type: string }
-  }>
+export function MyClaimsTab({ userId, claims: claimsList }: MyClaimsTabProps) {
 
   if (claimsList.length === 0) {
     return (

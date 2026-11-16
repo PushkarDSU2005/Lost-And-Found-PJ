@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { loginWithEmail, loginWithGoogle } from '@/app/actions/auth'
-import { getSafeRedirectPath } from '@/lib/security'
+import { getSafeRedirectPath } from '@/lib/security-client'
 
 export function LoginForm() {
   const router = useRouter()

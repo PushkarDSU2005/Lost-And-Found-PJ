@@ -1,7 +1,8 @@
+'use client'
+
 import Link from 'next/link'
 import { format } from 'date-fns'
 import { Inbox as InboxIcon } from 'lucide-react'
-import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { cn } from '@/lib/utils'
 import { buttonVariants } from '@/components/ui/button'
 import type { ClaimStatus } from '@/lib/types'
@@ -13,36 +14,21 @@ const CLAIM_STATUS_STYLES: Record<ClaimStatus, string> = {
   withdrawn: 'bg-muted text-muted-foreground',
 }
 
-interface IncomingClaimsTabProps {
-  userId: string
+type IncomingClaim = {
+  id: string
+  item_id: string
+  status: ClaimStatus
+  created_at: string
+  items: { id: string; title: string; reporter_id: string }
+  claimant: { full_name: string | null }
 }
 
-export async function IncomingClaimsTab({ userId }: IncomingClaimsTabProps) {
-  const supabase = await createSupabaseServerClient()
+interface IncomingClaimsTabProps {
+  userId: string
+  claims: IncomingClaim[]
+}
 
-  // Claims on items I reported
-  const { data: claims } = await supabase
-    .from('claims')
-    .select(`
-      id,
-      item_id,
-      status,
-      created_at,
-      items!claims_item_id_fkey(id, title, reporter_id),
-      claimant:profiles!claims_claimant_id_fkey(full_name)
-    `)
-    .eq('items.reporter_id', userId)
-    .order('created_at', { ascending: false })
-    .limit(50)
-
-  const claimsList = (claims ?? []) as unknown as Array<{
-    id: string
-    item_id: string
-    status: ClaimStatus
-    created_at: string
-    items: { id: string; title: string; reporter_id: string }
-    claimant: { full_name: string | null }
-  }>
+export function IncomingClaimsTab({ userId, claims: claimsList }: IncomingClaimsTabProps) {
 
   if (claimsList.length === 0) {
     return (

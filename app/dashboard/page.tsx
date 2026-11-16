@@ -1,27 +1,87 @@
-// TEMPORARY: Stub until dashboard is fixed (see page.tsx.disabled)
 import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
+import { Suspense } from 'react'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
+import { getSafeRedirectPath } from '@/lib/security'
+import { DashboardTabs } from '@/components/dashboard/DashboardTabs'
+import { StatsCard } from '@/components/dashboard/StatsCard'
+import { Skeleton } from '@/components/Skeleton'
 
 export const metadata: Metadata = {
-  title: 'Dashboard - Under Construction',
+  title: 'Dashboard',
 }
 
-export default async function DashboardPage() {
+interface PageProps {
+  searchParams: Promise<{ tab?: string }>
+}
+
+export default async function DashboardPage({ searchParams }: PageProps) {
   const supabase = await createSupabaseServerClient()
   const { data: { user } } = await supabase.auth.getUser()
 
-  if (!user) redirect('/auth/login?next=/dashboard')
+  const safeNext = getSafeRedirectPath('/dashboard', '/dashboard')
+  if (!user) redirect(`/auth/login?next=${encodeURIComponent(safeNext)}`)
+
+  const params = await searchParams
+  const activeTab = (params.tab ?? 'posts') as 'posts' | 'claims' | 'incoming'
+
+  // Fetch data for all tabs in parallel (Server Component)
+  const [myPostsResult, myClaimsResult, incomingClaimsResult] = await Promise.all([
+    supabase
+      .from('items')
+      .select('id, report_type, status, category, title, created_at, updated_at')
+      .eq('reporter_id', user.id)
+      .order('created_at', { ascending: false })
+      .limit(50),
+    
+    supabase
+      .from('claims')
+      .select('id, item_id, status, created_at, items!claims_item_id_fkey(id, title, report_type)')
+      .eq('claimant_id', user.id)
+      .order('created_at', { ascending: false })
+      .limit(50),
+    
+    supabase
+      .from('claims')
+      .select(`
+        id,
+        item_id,
+        status,
+        created_at,
+        items!claims_item_id_fkey(id, title, reporter_id),
+        claimant:profiles!claims_claimant_id_fkey(full_name)
+      `)
+      .eq('items.reporter_id', user.id)
+      .order('created_at', { ascending: false })
+      .limit(50),
+  ])
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-16 text-center">
-      <h1 className="text-3xl font-bold">Dashboard Under Construction</h1>
-      <p className="mt-4 text-muted-foreground">
-        The dashboard is being refactored to fix a build issue.
-      </p>
-      <p className="mt-2 text-sm text-muted-foreground">
-        Coming soon in Task 20!
-      </p>
+    <div className="mx-auto max-w-6xl px-4 pb-28 pt-6 sm:px-6 md:pb-12">
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+            Dashboard
+          </h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Manage your posts and claims
+          </p>
+        </div>
+
+        {/* Stats card */}
+        <Suspense fallback={<Skeleton className="h-20 w-48" />}>
+          <StatsCard userId={user.id} />
+        </Suspense>
+      </div>
+
+      {/* Tabs */}
+      <DashboardTabs 
+        userId={user.id} 
+        activeTab={activeTab}
+        myPosts={myPostsResult.data ?? []}
+        myClaims={myClaimsResult.data ?? []}
+        incomingClaims={incomingClaimsResult.data ?? []}
+      />
     </div>
   )
 }

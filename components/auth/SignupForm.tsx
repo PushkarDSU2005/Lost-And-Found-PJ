@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Checkbox } from '@/components/ui/checkbox'
 import { signupWithEmail, loginWithGoogle } from '@/app/actions/auth'
-import { getSafeRedirectPath } from '@/lib/security'
+import { getSafeRedirectPath } from '@/lib/security-client'
 
 type PasswordStrength = 'weak' | 'fair' | 'good' | 'strong'
 

@@ -1,7 +1,8 @@
+'use client'
+
 import Link from 'next/link'
 import { format } from 'date-fns'
 import { Edit, Trash2, Package as PackageIcon } from 'lucide-react'
-import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { StatusBadge } from '@/components/StatusBadge'
 import { CATEGORY_META } from '@/lib/types'
 import { buttonVariants } from '@/components/ui/button'
@@ -18,29 +19,22 @@ const EditItemDialog = dynamic(() => import('./EditItemDialog').then(mod => ({ d
 })
 import { DeleteItemButton } from './DeleteItemButton'
 
-interface MyPostsTabProps {
-  userId: string
+type Post = {
+  id: string
+  report_type: string
+  status: string
+  category: string
+  title: string
+  created_at: string
+  updated_at: string
 }
 
-export async function MyPostsTab({ userId }: MyPostsTabProps) {
-  const supabase = await createSupabaseServerClient()
+interface MyPostsTabProps {
+  userId: string
+  posts: Post[]
+}
 
-  const { data: items } = await supabase
-    .from('items')
-    .select('id, report_type, status, category, title, created_at, updated_at')
-    .eq('reporter_id', userId)
-    .order('created_at', { ascending: false })
-    .limit(50)
-
-  const posts = (items ?? []) as Array<{
-    id: string
-    report_type: string
-    status: string
-    category: string
-    title: string
-    created_at: string
-    updated_at: string
-  }>
+export function MyPostsTab({ userId, posts }: MyPostsTabProps) {
 
   if (posts.length === 0) {
     return (
