@@ -49,7 +49,7 @@ const envSchema = z.object({
   NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
   NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(20),
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(20),
-  ACCESS_MODE: z.enum(['public', 'private']).optional(),
+  ACCESS_MODE: z.enum(['public', 'private', 'restricted']).optional(),
   ALLOWED_EMAIL_DOMAIN: z.string().optional(),
   RESEND_API_KEY: z.string().startsWith('re_').optional(),
   CRON_SECRET: z.string().min(32).optional(),
