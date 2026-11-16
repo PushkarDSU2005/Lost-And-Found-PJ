@@ -15,11 +15,8 @@
 
 import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest'
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
-import {
-  RATE_LIMIT_MAX,
-  RATE_LIMIT_WINDOW_H,
-  type CreateItemResult,
-} from '@/app/actions/items'
+import { RATE_LIMIT_MAX, RATE_LIMIT_WINDOW_H } from '@/lib/constants/rate-limits'
+import type { CreateItemResult } from '@/app/actions/items'
 
 // ─── Real seed UUIDs (from reseed-real-uuids.sql) ────────────────────────────
 

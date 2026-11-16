@@ -233,8 +233,7 @@ export async function withdrawClaim(rawInput: unknown): Promise<ItemActionResult
 // ═══ ORIGINAL createItem + uploadItemImages actions (from earlier tasks) ═══
 // ═══════════════════════════════════════════════════════════════════════════════
 
-export const RATE_LIMIT_MAX = 5
-export const RATE_LIMIT_WINDOW_H = 24
+import { RATE_LIMIT_MAX, RATE_LIMIT_WINDOW_H } from '@/lib/constants/rate-limits'
 
 export type CreateItemResult =
   | { success: true; itemId: string }

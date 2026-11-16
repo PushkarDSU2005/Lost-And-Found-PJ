@@ -14,7 +14,8 @@
     "test:ci": "vitest run --config vitest.config.ts --reporter=verbose",
     "test:ui": "vitest --config vitest.config.ts --ui",
     "test:integration": "vitest run --config vitest.integration.config.ts --reporter=verbose",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "verify": "pnpm lint && pnpm typecheck && pnpm test:ci && pnpm build"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",
