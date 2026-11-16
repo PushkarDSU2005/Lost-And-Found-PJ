@@ -16,7 +16,8 @@
     "test:integration": "vitest run --config vitest.integration.config.ts --reporter=verbose",
     "test:e2e": "playwright test",
     "verify": "pnpm lint && pnpm typecheck && pnpm test:ci && pnpm build",
-    "doctor": "tsx scripts/doctor.ts"
+    "doctor": "tsx scripts/doctor.ts",
+    "audit": "tsx scripts/audit-app.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",
