@@ -15,7 +15,8 @@
     "test:ui": "vitest --config vitest.config.ts --ui",
     "test:integration": "vitest run --config vitest.integration.config.ts --reporter=verbose",
     "test:e2e": "playwright test",
-    "verify": "pnpm lint && pnpm typecheck && pnpm test:ci && pnpm build"
+    "verify": "pnpm lint && pnpm typecheck && pnpm test:ci && pnpm build",
+    "doctor": "tsx scripts/doctor.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",
@@ -59,6 +60,7 @@
     "@vitest/coverage-v8": "3.2.4",
     "@vitest/ui": "3.2.4",
     "axe-core": "4.10.3",
+    "dotenv": "^18.0.10",
     "eslint": "^9",
     "eslint-config-next": "15.3.3",
     "eslint-config-prettier": "10.1.5",
@@ -66,6 +68,7 @@
     "prettier": "3.5.3",
     "prettier-plugin-tailwindcss": "0.6.12",
     "tailwindcss": "^4",
+    "tsx": "^4.23.15",
     "typescript": "^5",
     "vitest": "3.2.4",
     "vitest-axe": "1.0.0-pre.5"
