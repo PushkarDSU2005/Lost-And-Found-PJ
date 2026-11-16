@@ -251,7 +251,7 @@ const createItemSchema = z.object({
   verification_question: z.string().max(300).optional(),
   verification_answer:   z.string().max(200).optional(),
   held_at:       z.string().uuid().optional(),
-  images:        z.array(z.string()).max(5).default([]),
+  images:        z.array(z.string()).max(3).default([]),
 })
 
 export async function createItem(rawInput: unknown): Promise<CreateItemResult> {
@@ -335,7 +335,30 @@ export async function createItem(rawInput: unknown): Promise<CreateItemResult> {
 
   const itemId = (item as { id: string }).id
 
-  // Images (handled separately via uploadItemImages after insert)
+  // Insert image references into item_images table
+  if (input.images.length > 0) {
+    const bucket = input.is_sensitive ? 'sensitive-images' : 'item-images'
+    const imageRows = input.images.map((storagePath, idx) => ({
+      item_id: itemId,
+      storage_path: storagePath,
+      bucket,
+      sort_order: idx,
+    }))
+
+    const { error: imgError } = await supabase
+      .from('item_images')
+      .insert(imageRows)
+
+    if (imgError) {
+      // Rollback item if images fail to insert
+      await supabase.from('items').delete().eq('id', itemId)
+      return {
+        success: false,
+        code: 'DB_ERROR',
+        error: `Failed to save images: ${imgError.message}`,
+      }
+    }
+  }
 
   redirect(`/items/${itemId}?created=1`)
 }
