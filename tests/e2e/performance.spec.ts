@@ -30,15 +30,15 @@ test.describe('PERF-01: Lighthouse performance audit', () => {
     
     // Log scores
     console.log('\nLighthouse Scores:')
-    console.log(`Performance: ${result.lhr.categories.performance.score * 100}`)
-    console.log(`Accessibility: ${result.lhr.categories.accessibility.score * 100}`)
-    console.log(`Best Practices: ${result.lhr.categories['best-practices'].score * 100}`)
-    console.log(`SEO: ${result.lhr.categories.seo.score * 100}`)
+    console.log(`Performance: ${(result.lhr.categories.performance.score ?? 0) * 100}`)
+    console.log(`Accessibility: ${(result.lhr.categories.accessibility.score ?? 0) * 100}`)
+    console.log(`Best Practices: ${(result.lhr.categories['best-practices']?.score ?? 0) * 100}`)
+    console.log(`SEO: ${(result.lhr.categories.seo.score ?? 0) * 100}`)
     
     // Strict thresholds for production
     if (process.env.NODE_ENV === 'production') {
-      expect(result.lhr.categories.performance.score * 100).toBeGreaterThanOrEqual(90)
-      expect(result.lhr.categories.accessibility.score * 100).toBeGreaterThanOrEqual(95)
+      expect((result.lhr.categories.performance.score ?? 0) * 100).toBeGreaterThanOrEqual(90)
+      expect((result.lhr.categories.accessibility.score ?? 0) * 100).toBeGreaterThanOrEqual(95)
     }
   })
 })

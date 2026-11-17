@@ -35,9 +35,15 @@ vi.mock('next/navigation', () => ({
 
 describe('DashboardTabs', () => {
   const userId = 'test-user-id'
+  const mockProps = {
+    userId,
+    myPosts: [],
+    myClaims: [],
+    incomingClaims: [],
+  }
 
   it('renders all three tab buttons', () => {
-    render(<DashboardTabs userId={userId} activeTab="posts" />)
+    render(<DashboardTabs {...mockProps} activeTab="posts" />)
     
     expect(screen.getByTestId('tab-posts')).toBeInTheDocument()
     expect(screen.getByTestId('tab-claims')).toBeInTheDocument()
@@ -45,7 +51,7 @@ describe('DashboardTabs', () => {
   })
 
   it('shows "My Posts" as active by default', () => {
-    render(<DashboardTabs userId={userId} activeTab="posts" />)
+    render(<DashboardTabs {...mockProps} activeTab="posts" />)
     
     const postsTab = screen.getByTestId('tab-posts')
     expect(postsTab).toHaveAttribute('aria-selected', 'true')
@@ -54,7 +60,7 @@ describe('DashboardTabs', () => {
   })
 
   it('switches to "My Claims" tab when clicked', () => {
-    render(<DashboardTabs userId={userId} activeTab="posts" />)
+    render(<DashboardTabs {...mockProps} activeTab="posts" />)
     
     const claimsTab = screen.getByTestId('tab-claims')
     fireEvent.click(claimsTab)
@@ -63,7 +69,7 @@ describe('DashboardTabs', () => {
   })
 
   it('switches to "Claims on My Items" tab when clicked', () => {
-    render(<DashboardTabs userId={userId} activeTab="posts" />)
+    render(<DashboardTabs {...mockProps} activeTab="posts" />)
     
     const incomingTab = screen.getByTestId('tab-incoming')
     fireEvent.click(incomingTab)
@@ -72,7 +78,7 @@ describe('DashboardTabs', () => {
   })
 
   it('shows correct panel for activeTab="claims"', () => {
-    render(<DashboardTabs userId={userId} activeTab="claims" />)
+    render(<DashboardTabs {...mockProps} activeTab="claims" />)
     
     expect(screen.getByTestId('tab-claims')).toHaveAttribute('aria-selected', 'true')
     expect(screen.getByTestId('panel-claims')).toBeInTheDocument()
@@ -80,7 +86,7 @@ describe('DashboardTabs', () => {
   })
 
   it('shows correct panel for activeTab="incoming"', () => {
-    render(<DashboardTabs userId={userId} activeTab="incoming" />)
+    render(<DashboardTabs {...mockProps} activeTab="incoming" />)
     
     expect(screen.getByTestId('tab-incoming')).toHaveAttribute('aria-selected', 'true')
     expect(screen.getByTestId('panel-incoming')).toBeInTheDocument()
