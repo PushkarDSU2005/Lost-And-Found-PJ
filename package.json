@@ -17,7 +17,8 @@
     "test:e2e": "playwright test",
     "verify": "pnpm lint && pnpm typecheck && pnpm test:ci && pnpm build",
     "doctor": "tsx scripts/doctor.ts",
-    "audit": "tsx scripts/audit-app.ts"
+    "audit": "tsx scripts/audit-app.ts",
+    "test:auth": "tsx scripts/test-auth.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",
