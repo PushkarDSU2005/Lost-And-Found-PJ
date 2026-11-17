@@ -1,4 +1,9 @@
 import { defineConfig, devices } from '@playwright/test'
+import * as dotenv from 'dotenv'
+import { resolve } from 'path'
+
+// Load .env.local for E2E tests
+dotenv.config({ path: resolve(__dirname, '.env.local') })
 
 export default defineConfig({
   testDir: './tests/e2e',
