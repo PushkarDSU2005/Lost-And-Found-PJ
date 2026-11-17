@@ -124,10 +124,16 @@ export function safeAction<TInput, TOutput>(
       }
       
       // Return user-friendly error
+      // For known error codes, use the specific message from the error
+      // For unknown errors, use generic message
+      const userMessage = (code !== 'UNKNOWN_ERROR' && error instanceof Error) 
+        ? error.message 
+        : getErrorMessage(code)
+      
       return {
         ok: false,
         code,
-        message: getErrorMessage(code),
+        message: userMessage,
       }
     }
   }
