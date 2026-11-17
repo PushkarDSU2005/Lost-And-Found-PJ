@@ -87,6 +87,10 @@ async function signInViaAPI(page: Page, email: string, password: string) {
       sameSite: 'Lax',
     },
   ])
+
+  // Navigate to a page to establish the session
+  await page.goto('/')
+  await page.waitForTimeout(500) // Let session cookies propagate
 }
 
 // ─── Helper: Create test item ─────────────────────────────────────────────────
