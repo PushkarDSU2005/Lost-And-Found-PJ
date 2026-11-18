@@ -2,6 +2,7 @@
   "name": "lost-and-found",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "pnpm@9.15.0",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -11,14 +12,17 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "vitest --config vitest.config.ts",
+    "test:unit": "vitest run --config vitest.config.ts --reporter=verbose",
     "test:ci": "vitest run --config vitest.config.ts --reporter=verbose",
     "test:ui": "vitest --config vitest.config.ts --ui",
     "test:integration": "vitest run --config vitest.integration.config.ts --reporter=verbose",
     "test:e2e": "playwright test",
-    "verify": "pnpm lint && pnpm typecheck && pnpm test:ci && pnpm build",
+    "verify": "pnpm lint && pnpm typecheck && pnpm test:unit",
+    "verify:full": "pnpm verify && pnpm test:integration && pnpm test:e2e",
     "doctor": "tsx scripts/doctor.ts",
     "audit": "tsx scripts/audit-app.ts",
-    "test:auth": "tsx scripts/test-auth.ts"
+    "test:auth": "tsx scripts/test-auth.ts",
+    "prepare": "husky"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",
@@ -67,6 +71,7 @@
     "eslint": "^9",
     "eslint-config-next": "15.3.3",
     "eslint-config-prettier": "10.1.5",
+    "husky": "^9.1.7",
     "jsdom": "26.1.0",
     "lighthouse": "^13.6.0",
     "playwright-lighthouse": "^4.0.0",

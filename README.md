@@ -132,6 +132,9 @@ Run `seed.sql` for test users and sample data.
 # Run all tests
 pnpm test
 
+# Unit tests only
+pnpm test:unit
+
 # E2E tests
 pnpm test:e2e
 
@@ -146,9 +149,29 @@ pnpm test:e2e --ui
 # Run build
 pnpm build
 
-# Full verification (lint + typecheck + test + build)
+# Full verification (lint + typecheck + test:unit)
+pnpm verify
+
+# Full verification including integration and E2E tests
+pnpm verify:full
+```
+
+### Before You Push
+
+Always run verification locally before pushing:
+
+```bash
 pnpm verify
 ```
+
+This runs:
+1. **Linting** (`pnpm lint`) - Code style checks
+2. **Type checking** (`pnpm typecheck`) - TypeScript validation
+3. **Unit tests** (`pnpm test:unit`) - Fast component/logic tests
+
+Takes ~15-30 seconds. A pre-push hook will automatically run this, but testing manually first saves time.
+
+**Tip:** Keep the build fast by running only `verify` (not the full suite with E2E tests) on every push.
 
 ### Test Coverage
 - **Authentication:** 12 tests ✅
