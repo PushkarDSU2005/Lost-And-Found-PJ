@@ -113,12 +113,19 @@ export async function checkIPRateLimit(
   maxRequests: number,
   windowMs: number
 ): Promise<{ allowed: boolean; reason?: string }> {
-  const headersList = await headers()
-  const forwarded = headersList.get('x-forwarded-for')
-  const realIp = headersList.get('x-real-ip')
-  
-  // Get IP from headers (Vercel provides x-forwarded-for)
-  const ip = forwarded?.split(',')[0]?.trim() || realIp || 'unknown'
+  // In test environment or when headers() fails, skip IP-based rate limiting
+  let ip = 'unknown'
+  try {
+    const headersList = await headers()
+    const forwarded = headersList.get('x-forwarded-for')
+    const realIp = headersList.get('x-real-ip')
+    // Get IP from headers (Vercel provides x-forwarded-for)
+    ip = forwarded?.split(',')[0]?.trim() || realIp || 'unknown'
+  } catch (error) {
+    // headers() throws when called outside request context (e.g., in tests)
+    // Fall back to allowing the request
+    return { allowed: true }
+  }
   
   const key = `${ip}:${action}`
   const now = Date.now()

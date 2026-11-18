@@ -52,8 +52,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     needs: [verify]
-    # Only run when Supabase secrets are present (not on forks)
-    if: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL != '' }}
+    # Only run when Supabase secrets AND seed data are present
+    # To enable: Add secrets AND run scripts/reseed-real-uuids.sql in Supabase
+    if: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL != '' && vars.INTEGRATION_TESTS_ENABLED == 'true' }}
 
     steps:
       - name: Checkout
