@@ -62,10 +62,10 @@ export function ReportForm({ type, locations }: ReportFormProps) {
       title: '',
       description: '',
       category: undefined,
-      location_id: '',
+      location_id: undefined,
       location_text: '',
       date_occurred: format(new Date(), "yyyy-MM-dd'T'HH:mm"),
-      held_at: '',
+      held_at: undefined,
       verification_question: '',
       verification_answer: '',
       is_sensitive: false,
@@ -168,8 +168,14 @@ export function ReportForm({ type, locations }: ReportFormProps) {
     }
 
     // 2. Call server action with paths (not File objects)
+    // Transform location_id: "other" or empty string → undefined (backend expects UUID or null)
+    const locationId = (!data.location_id || data.location_id === 'other') ? undefined : data.location_id
+    const heldAt = (!data.held_at || data.held_at === '') ? undefined : data.held_at
+    
     const result = await createItem({
       ...data,
+      location_id: locationId,
+      held_at: heldAt,
       images: imagePaths,
     })
 
