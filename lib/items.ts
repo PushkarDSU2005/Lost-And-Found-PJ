@@ -14,7 +14,7 @@ import type { Item, ItemImage } from '@/lib/types'
 export const DETAIL_SELECT = `
   id, title, report_type, status, category,
   description, location_id, location_text, date_occurred,
-  contact_override, expires_at, resolved_at,
+  contact_override, expires_at, resolved_at, reporter_id,
   is_sensitive, held_at, verification_question,
   created_at, updated_at,
   location:locations!items_location_id_fkey(id, name, building, floor, drop_point, hours),
