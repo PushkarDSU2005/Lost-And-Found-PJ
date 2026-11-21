@@ -21,6 +21,11 @@ export function LoginForm() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  // Check email domain
+  const emailDomain = email.match(/@(.+)$/)?.[1]?.toLowerCase()
+  const ALLOWED_DOMAINS = ['gmail.com', 'dsu.edu.in']
+  const isDomainAllowed = !emailDomain || ALLOWED_DOMAINS.includes(emailDomain)
+
   async function handleEmailLogin(e: React.FormEvent) {
     e.preventDefault()
     setError(null)
@@ -82,13 +87,19 @@ export function LoginForm() {
           <Input
             id="email"
             type="email"
-            placeholder="you@college.edu"
+            placeholder="you@gmail.com or you@dsu.edu.in"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
             disabled={isLoading}
             autoComplete="email"
+            className={emailDomain && !isDomainAllowed ? 'border-destructive' : ''}
           />
+          {emailDomain && !isDomainAllowed && (
+            <p className="text-xs text-destructive">
+              Only @gmail.com and @dsu.edu.in are allowed
+            </p>
+          )}
         </div>
 
         <div className="space-y-2">

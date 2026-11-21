@@ -13,7 +13,7 @@ export default function SignupPage() {
   return (
     <AuthLayout
       title="Create your account"
-      subtitle="Join CampusFind to report lost items, claim found belongings, and help your campus community."
+      subtitle="Only @gmail.com and @dsu.edu.in emails are allowed. Join to report and claim lost items."
     >
       <Suspense fallback={<Skeleton className="h-96 w-full" />}>
         <SignupForm />

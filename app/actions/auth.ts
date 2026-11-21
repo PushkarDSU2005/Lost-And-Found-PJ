@@ -15,40 +15,27 @@ import { validateEmail, getSafeRedirectPath, checkIPRateLimit } from '@/lib/secu
 // ═════════════════════════════════════════════════════════════════════════════
 
 /**
- * Check if email domain is allowed based on ACCESS_MODE setting
+ * Allowed email domains for CampusFind
+ * Only @gmail.com and @dsu.edu.in addresses can sign up
  */
-function isEmailDomainAllowed(email: string): { 
-  allowed: boolean
-  reason?: string 
-} {
-  const accessMode = process.env.ACCESS_MODE || 'public'
+const ALLOWED_DOMAINS = ['gmail.com', 'dsu.edu.in'] as const
+
+/**
+ * Check if email domain is allowed
+ * Only @gmail.com and @dsu.edu.in are permitted
+ */
+function isEmailDomainAllowed(email: string): void {
+  const emailDomain = email.split('@')[1]?.toLowerCase()
   
-  // Public mode: all emails allowed
-  if (accessMode === 'public') {
-    return { allowed: true }
+  if (!emailDomain) {
+    throw new Error('Invalid email format')
   }
   
-  const allowedDomain = process.env.ALLOWED_EMAIL_DOMAIN
-  
-  // Restricted mode: check domain
-  if (accessMode === 'restricted') {
-    if (!allowedDomain) {
-      console.error('[Auth] ALLOWED_EMAIL_DOMAIN not set but ACCESS_MODE=restricted')
-      throw new Error('Server misconfiguration. Please contact support.')
-    }
-    
-    const emailDomain = email.split('@')[1]?.toLowerCase()
-    if (emailDomain !== allowedDomain.toLowerCase()) {
-      throw new Error(`Only ${allowedDomain} email addresses are allowed to register.`)
-    }
+  if (!ALLOWED_DOMAINS.includes(emailDomain as any)) {
+    throw new Error(
+      `Only ${ALLOWED_DOMAINS.join(' and ')} email addresses are allowed to register.`
+    )
   }
-  
-  // Private mode: no signups allowed
-  if (accessMode === 'private') {
-    throw new Error('Registration is currently closed. Please contact an administrator.')
-  }
-  
-  return { allowed: true }
 }
 
 // ═════════════════════════════════════════════════════════════════════════════

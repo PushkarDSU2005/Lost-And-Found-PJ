@@ -58,6 +58,13 @@ export function SignupForm() {
     return match ? match[1].toLowerCase() : null
   }, [email])
 
+  // Check if domain is allowed
+  const ALLOWED_DOMAINS = ['gmail.com', 'dsu.edu.in']
+  const isDomainAllowed = useMemo(() => {
+    if (!emailDomain) return true // No validation error until domain is entered
+    return ALLOWED_DOMAINS.includes(emailDomain)
+  }, [emailDomain])
+
   async function handleEmailSignup(e: React.FormEvent) {
     e.preventDefault()
     setError(null)
@@ -66,6 +73,12 @@ export function SignupForm() {
     // Validate full name
     if (fullName.trim().length < 2) {
       setError('Please enter your full name')
+      return
+    }
+
+    // Validate email domain
+    if (!isDomainAllowed) {
+      setError('Only @gmail.com and @dsu.edu.in email addresses are allowed')
       return
     }
 
@@ -183,16 +196,24 @@ export function SignupForm() {
           <Input
             id="email"
             type="email"
-            placeholder="you@college.edu"
+            placeholder="you@gmail.com or you@dsu.edu.in"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
             disabled={isLoading || !!successMessage}
             autoComplete="email"
+            className={emailDomain && !isDomainAllowed ? 'border-destructive' : ''}
           />
-          {emailDomain && (
-            <p className="text-xs text-muted-foreground">
-              Domain: {emailDomain}
+          {emailDomain && !isDomainAllowed && (
+            <p className="text-xs text-destructive flex items-center gap-1">
+              <X className="h-3 w-3" />
+              Only @gmail.com and @dsu.edu.in are allowed
+            </p>
+          )}
+          {emailDomain && isDomainAllowed && (
+            <p className="text-xs text-green-600 dark:text-green-400 flex items-center gap-1">
+              <Check className="h-3 w-3" />
+              Valid domain: {emailDomain}
             </p>
           )}
         </div>

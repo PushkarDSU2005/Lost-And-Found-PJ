@@ -43,24 +43,20 @@ export async function GET(request: NextRequest) {
     // Check domain restriction for OAuth sign-ups
     const { data: { user } } = await supabase.auth.getUser()
     if (user?.email) {
-      const accessMode = process.env.ACCESS_MODE || 'public'
-      const allowedDomain = process.env.ALLOWED_EMAIL_DOMAIN
+      const ALLOWED_DOMAINS = ['gmail.com', 'dsu.edu.in']
+      const emailDomain = user.email.split('@')[1]?.toLowerCase()
       
-      if (accessMode === 'restricted' && allowedDomain) {
-        const emailDomain = user.email.split('@')[1]?.toLowerCase()
+      if (!emailDomain || !ALLOWED_DOMAINS.includes(emailDomain)) {
+        // Sign out the user
+        await supabase.auth.signOut()
         
-        if (emailDomain !== allowedDomain.toLowerCase()) {
-          // Sign out the user
-          await supabase.auth.signOut()
-          
-          // Redirect to login with error
-          const errorUrl = new URL('/login', requestUrl.origin)
-          errorUrl.searchParams.set(
-            'error',
-            `Only ${allowedDomain} email addresses are allowed. Your account has been removed.`
-          )
-          return NextResponse.redirect(errorUrl)
-        }
+        // Redirect to login with error
+        const errorUrl = new URL('/login', requestUrl.origin)
+        errorUrl.searchParams.set(
+          'error',
+          `Only ${ALLOWED_DOMAINS.join(' and ')} email addresses are allowed. Your account has been removed.`
+        )
+        return NextResponse.redirect(errorUrl)
       }
     }
 
